@@ -1,0 +1,86 @@
+<html>
+<head>
+  <title>GitHub Fetcher</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+<h2>GitHub Fetcher</h2>
+<form class="repo-fetcher">
+  <h3>Enter a GitHub username to fetch:</h3>
+  <input type="text" name="username" />
+
+  <button type="submit">Fetch User's Repos</button>
+</form>
+
+<table class="header top-repos">
+		<td>Repo</td>
+		<td>Username</td>
+		<td>Stargazers</td>
+
+</table>
+
+<script src="https://code.jquery.com/jquery-2.2.0.js"></script>
+
+<script>
+
+$('.repo-fetcher').on('submit', function(e) {
+    e.preventDefault();
+
+
+    var hub = $('input').val();
+    $.ajax({
+        url: 'https://api.github.com/users/' + hub + '/repos',
+        type: 'GET',
+        crossDomain: true,
+        beforeSend: function (xhr) {
+       		xhr.setRequestHeader('Authorization', 'token 954a07cf1005f3c687d07c473c855ec79c301c03');
+		},
+        success: function (response) {
+        	response = response.map(val => {
+        		return {
+        			repo_name: val.name,
+        			username: val.owner.login,
+        			num_stargazer: val.stargazers_count,
+        			url: val.svn_url
+        		}
+        	})
+
+            $.ajax({
+                url: '/repos/import',
+                type: 'POST',
+                data: JSON.stringify(response),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function(response) {
+                	console.log('ajaxresponse', response)
+                }
+            })
+        },
+        error: function () {
+            alert("error");
+        }
+    });
+
+
+});
+
+$.ajax({
+    url: 'repos',
+    type: 'GET',
+   	success: function(rows) {
+   		rows.sort((a,b) => {
+   			return b.num_stargazer - a.num_stargazer;
+   		})
+   		$('.top-repos').html('')
+    	rows.forEach(el => {
+    		let url = el.url;
+    		console.log('URL', url)
+    		$('.top-repos').append(`<tr><td><a href="${url}">${el.repo_name}</a></td><td>${el.username}</td><td>${el.num_stargazer}</td></tr>`);
+    	});
+    }
+});
+
+</script>
+</body>
+</html>
