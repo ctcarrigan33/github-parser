@@ -1,0 +1,12 @@
+/*table {
+    border-collapse: separate;
+    border-spacing: 10px 50px;
+}*/
+
+.header {
+	font-weight: bold;
+}
+
+td {
+	padding: 10px;
+}
