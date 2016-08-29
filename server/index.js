@@ -18,16 +18,6 @@ var knex = require('knex')({
 
 
 
-
-// knex('books')
-//   .where('published_date', '<', 2000)
-//   .update({
-//     status: 'archived',
-//     thisKeyIsSkipped: undefined
-//   })
-
-
-
 app.post('/repos/import', function (req, res) {
 	var repos = req.body;
 
@@ -47,8 +37,6 @@ app.post('/repos/import', function (req, res) {
 
 
 app.get('/repos', function (req, res) {
-
-  // TODO
   knex('repos').select().orderBy('num_stargazer', 'DESC').limit(25)
   .then(function(rows) {
   	res.send(rows);
@@ -58,7 +46,6 @@ app.get('/repos', function (req, res) {
 
 
 app.get('/', function (req, res) {
-  // res.sendFile('/Users/charlescarrigan/Desktop/MakerSquare/Week 6/sprint.fullstack-exercise.exercise/client/index.html')
   res.sendFile(__dirname + '/client/index.html')
 });
 
